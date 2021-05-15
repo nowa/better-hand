@@ -2,14 +2,14 @@ use rayon::prelude::*;
 use rs_poker::core::*;
 
 // Take a deck of the remaining cards, generate single hands
-pub fn enemy_hands(remaining: &FlatDeck) -> Vec<Hand> {
+fn enemy_hands(remaining: &FlatDeck) -> Vec<Hand> {
     CardIter::new(&remaining[..], 2)
         .map(|v| Hand::new_with_cards(v))
         .collect()
 }
 
 // take a user's hand and the board, generate the rank
-pub fn hand_board_rank(hand: Hand, board: Hand) -> Rank {
+fn hand_board_rank(hand: Hand, board: Hand) -> Rank {
     let full_hand: Vec<Card> = board
         .cards()
         .into_iter()

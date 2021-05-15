@@ -4,6 +4,7 @@ use clap::{App, Arg};
 use rs_poker::core::*;
 
 mod driver;
+mod output;
 
 fn main() -> Result<(), String> {
     let matches = App::new("better-hand")
@@ -57,9 +58,7 @@ fn main() -> Result<(), String> {
 
     let enemy_wins: Vec<Hand> = driver::calc(hand, board, deck.flatten());
 
-    for hand in enemy_wins {
-        println!("{}, {}", hand.cards()[0], hand.cards()[1])
-    }
-
+    let table = output::pretty_print(enemy_wins);
+    table.printstd();
     Ok(())
 }
