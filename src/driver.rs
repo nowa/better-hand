@@ -19,7 +19,7 @@ pub fn hand_board_rank(hand: Hand, board: Hand) -> Rank {
     full_hand.rank()
 }
 
-pub fn river_calc(user_hand: Hand, board: Hand, remaining: FlatDeck) -> Vec<Hand> {
+pub fn calc(user_hand: Hand, board: Hand, remaining: FlatDeck) -> Vec<Hand> {
     let usr_rank: Rank = hand_board_rank(user_hand, board.clone());
     let enemy: Vec<Hand> = enemy_hands(&remaining);
     let beats_us: Vec<Hand> = enemy

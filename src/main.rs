@@ -34,8 +34,8 @@ fn main() -> Result<(), String> {
     let hand = Hand::new_from_str(matches.value_of("hand").unwrap())?;
 
     // Check input lengths
-    if board.len() != 5 {
-        return Err("Board length should be 5".to_string());
+    if board.len() < 3 || board.len() > 5 {
+        return Err("Board should be post-flop".to_string());
     }
     if hand.len() != 2 {
         return Err("Hand length should be 2".to_string());
@@ -51,13 +51,15 @@ fn main() -> Result<(), String> {
     }
 
     // Verify that all provided cards were unique
-    if deck.len() != (52 - 7) {
+    if deck.len() != (52 - board.len() - hand.len()) {
         return Err("Some provided cards were non-unique".to_string());
     }
 
-    let enemy_wins: Vec<Hand> = driver::river_calc(hand, board, deck.flatten());
+    let enemy_wins: Vec<Hand> = driver::calc(hand, board, deck.flatten());
 
-    println!("{:?}", enemy_wins);
+    for hand in enemy_wins {
+        println!("{}, {}", hand.cards()[0], hand.cards()[1])
+    }
 
     Ok(())
 }
