@@ -2,6 +2,10 @@ use prettytable::{Attr, Cell, Row, Table};
 use rayon::prelude::*;
 use rs_poker::core::*;
 
+fn value_flip(v: u8) -> u8 {
+    12 - v
+}
+
 fn cell_color(i: u8, j: u8, occur: u8) -> u32 {
     if occur == 0 {
         if i <= j {
@@ -18,8 +22,8 @@ fn cell_color(i: u8, j: u8, occur: u8) -> u32 {
 fn position(hand: Hand) -> (u8, u8) {
     let card1: Card = hand.cards()[0];
     let card2: Card = hand.cards()[1];
-    let a = card1.value as u8;
-    let b = card2.value as u8;
+    let a = value_flip(card1.value as u8);
+    let b = value_flip(card2.value as u8);
 
     if card1.suit == card2.suit {
         if a > b {
@@ -49,8 +53,8 @@ fn string_from_grid(i: u8, j: u8, count: u8) -> String {
         // off suit
         format!(
             "{}{}{}: {}",
-            Value::from_u8(i).to_char(),
-            Value::from_u8(j).to_char(),
+            Value::from_u8(value_flip(j)).to_char(),
+            Value::from_u8(value_flip(i)).to_char(),
             "o",
             count,
         )
@@ -58,8 +62,8 @@ fn string_from_grid(i: u8, j: u8, count: u8) -> String {
         // suited
         format!(
             "{}{}{}: {}",
-            Value::from_u8(j).to_char(),
-            Value::from_u8(i).to_char(),
+            Value::from_u8(value_flip(i)).to_char(),
+            Value::from_u8(value_flip(j)).to_char(),
             "s",
             count,
         )
@@ -67,8 +71,8 @@ fn string_from_grid(i: u8, j: u8, count: u8) -> String {
         // pair
         format!(
             "{}{}: {}",
-            Value::from_u8(i).to_char(),
-            Value::from_u8(j).to_char(),
+            Value::from_u8(value_flip(i)).to_char(),
+            Value::from_u8(value_flip(j)).to_char(),
             count,
         )
     }
