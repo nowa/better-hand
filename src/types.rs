@@ -4,6 +4,7 @@ use rs_poker::core::*;
 pub enum Suited {
     On,
     Off,
+    Pair,
 }
 
 #[derive(PartialEq, Hash, Copy, Clone)]
@@ -38,6 +39,7 @@ impl ToString for PokerHand {
         match self.s {
             Suited::On => format!("{}{}{}", self.a.to_char(), self.b.to_char(), 's'),
             Suited::Off => format!("{}{}{}", self.a.to_char(), self.b.to_char(), 'o'),
+            Suited::Pair => format!("{}{}", self.a.to_char(), self.b.to_char()),
         }
     }
 }
@@ -49,7 +51,11 @@ impl PokerHand {
         let s: Suited = if hand.0.suit == hand.1.suit {
             Suited::On
         } else {
-            Suited::Off
+            if a == b {
+                Suited::Pair
+            } else {
+                Suited::Off
+            }
         };
 
         if a > b {
@@ -61,8 +67,8 @@ impl PokerHand {
 
     pub fn grid_pos(&self) -> (u8, u8) {
         match self.s {
-            Suited::On => (12 - (self.b as u8), 12 - (self.a as u8)),
-            Suited::Off => (12 - (self.a as u8), 12 - (self.b as u8)),
+            Suited::On => (12 - (self.a as u8), 12 - (self.b as u8)),
+            _ => (12 - (self.b as u8), 12 - (self.a as u8)),
         }
     }
 }

@@ -3,7 +3,11 @@ use prettytable::{Attr, Cell, Row, Table};
 use std::collections::HashMap;
 
 fn cell_color(i: u8, j: u8, prob: Option<f64>) -> u32 {
-    if prob.is_some() && prob.unwrap() <= 0.5 {
+    if prob.is_none() {
+        return 11;
+    }
+
+    if prob.unwrap() <= 0.75 {
         1
     } else {
         if i <= j {
