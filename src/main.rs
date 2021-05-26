@@ -33,12 +33,6 @@ fn main() -> Result<(), String> {
 				.value_name("HAND")
 				.help("Takes a string of your hole cards, with cards indicated in RANKsuit form (e.g. 9s is the 9 of spades). Cards are unseparated (e.g. AhAs)")
 		).arg(
-			Arg::with_name("verbose")
-				.short("v")
-				.required(false)
-				.takes_value(false)
-				.help("Presents the table with the exact hands that beat you, not just a range chart.")
-		).arg(
 			Arg::with_name("interactive")
 				.short("I")
 				.long("interactive")
