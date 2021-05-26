@@ -11,8 +11,8 @@ mod types;
 fn main() -> Result<(), String> {
     let matches = App::new("better-hand")
 		.author("Adithya Chari, <adithya.chari@gmail.com>")
-		.version("0.1.0")
-		.about("Calculates opponent hands which beat yours for No-Limit Texas Hold 'Em")
+		.version("1.0.0")
+		.about("Calculates your equity against opponent starting hands for No-Limit Texas Hold 'Em")
 		.arg(
 			Arg::with_name("board")
 				.short("b")
@@ -39,14 +39,15 @@ fn main() -> Result<(), String> {
 				.conflicts_with("board")
 				.conflicts_with("hand")
 				.takes_value(false)
-				.help("Starts the tool in interactive mode")
+				.help("Starts the tool in interactive mode. Exit with 'exit'")
 		).get_matches();
 
     if matches.is_present("interactive") {
         loop {
+            // Get hand input
             let input_hand: String = Input::new()
                 .with_prompt("Hand")
-                .allow_empty(false)
+                .allow_empty(true)
                 .validate_with(|input: &String| -> Result<(), &str> {
                     if input.eq_ignore_ascii_case("exit") {
                         return Ok(());
@@ -64,16 +65,21 @@ fn main() -> Result<(), String> {
                 })
                 .interact_text()
                 .unwrap();
-
+            if input_hand == "" {
+                continue;
+            }
             if input_hand.eq_ignore_ascii_case("exit") {
                 break;
             }
 
+            // Parse and store hand
             let hand: Hand = Hand::new_from_str(&input_hand).unwrap();
+            let hand: Vec<Card> = hand.iter().map(|c| *c).collect();
 
+            // Get flop input
             let input_flop: String = Input::new()
                 .with_prompt("Flop")
-                .allow_empty(false)
+                .allow_empty(true)
                 .validate_with(|input: &String| -> Result<(), &str> {
                     if input.eq_ignore_ascii_case("exit") {
                         return Ok(());
@@ -91,38 +97,31 @@ fn main() -> Result<(), String> {
                 })
                 .interact_text()
                 .unwrap();
-
+            if input_flop == "" {
+                continue;
+            }
             if input_flop.eq_ignore_ascii_case("exit") {
                 break;
             }
 
-            let mut board: Hand = Hand::new_from_str(&input_flop).unwrap();
-
-            let mut deck: Deck = Deck::default();
-            for card in board.cards() {
-                deck.remove(*card);
-            }
-            for card in hand.cards() {
-                deck.remove(*card);
-            }
-
+            // Parse board on the flop
+            let board: Hand = Hand::new_from_str(&input_flop).unwrap();
+            let mut board: Vec<Card> = board.iter().map(|c| *c).collect();
+            let deck: Deck = driver::deck_without(&hand, &board);
             if deck.len() != (52 - 5) {
                 println!("{}", "Some provided cards were non-unique");
                 continue;
             }
 
-            let enemy_wins: Vec<Hand> = driver::calc(hand.clone(), board.clone(), deck.flatten());
-            let table = if matches.is_present("verbose") {
-                output::pretty_print_cards(enemy_wins)
-            } else {
-                output::pretty_print(enemy_wins)
-            };
-
+            // Flop Calc
+            let enemy_wins = driver::flop_calc(hand.clone(), board.clone(), deck);
+            let table = output::pretty_print(enemy_wins);
             table.printstd();
 
+            // Get turn card input
             let input_turn: String = Input::new()
                 .with_prompt("Turn")
-                .allow_empty(false)
+                .allow_empty(true)
                 .validate_with(|input: &String| -> Result<(), &str> {
                     if input.eq_ignore_ascii_case("exit") {
                         return Ok(());
@@ -140,39 +139,31 @@ fn main() -> Result<(), String> {
                 })
                 .interact_text()
                 .unwrap();
-
+            if input_turn == "" {
+                continue;
+            }
             if input_turn.eq_ignore_ascii_case("exit") {
                 break;
             }
 
+            // Parse turn card
             let turn: Hand = Hand::new_from_str(&input_turn).unwrap();
             board.push(turn.cards()[0]);
-
-            let mut deck: Deck = Deck::default();
-            for card in board.cards() {
-                deck.remove(*card);
-            }
-            for card in hand.cards() {
-                deck.remove(*card);
-            }
-
+            let deck: Deck = driver::deck_without(&hand, &board);
             if deck.len() != (52 - 6) {
                 println!("{}", "Some provided cards were non-unique");
                 continue;
             }
 
-            let enemy_wins: Vec<Hand> = driver::calc(hand.clone(), board.clone(), deck.flatten());
-            let table = if matches.is_present("verbose") {
-                output::pretty_print_cards(enemy_wins)
-            } else {
-                output::pretty_print(enemy_wins)
-            };
-
+            // Turn calc
+            let enemy_wins = driver::turn_calc(hand.clone(), board.clone(), deck);
+            let table = output::pretty_print(enemy_wins);
             table.printstd();
 
+            // Get river card input
             let input_river: String = Input::new()
                 .with_prompt("River")
-                .allow_empty(false)
+                .allow_empty(true)
                 .validate_with(|input: &String| -> Result<(), &str> {
                     if input.eq_ignore_ascii_case("exit") {
                         return Ok(());
@@ -190,40 +181,33 @@ fn main() -> Result<(), String> {
                 })
                 .interact_text()
                 .unwrap();
-
+            if input_river == "" {
+                continue;
+            }
             if input_river.eq_ignore_ascii_case("exit") {
                 break;
             }
 
+            // Parse river card
             let river: Hand = Hand::new_from_str(&input_river).unwrap();
             board.push(river.cards()[0]);
-
-            let mut deck: Deck = Deck::default();
-            for card in board.cards() {
-                deck.remove(*card);
-            }
-            for card in hand.cards() {
-                deck.remove(*card);
-            }
-
+            let deck: Deck = driver::deck_without(&hand, &board);
             if deck.len() != (52 - 7) {
                 println!("{}", "Some provided cards were non-unique");
                 continue;
             }
 
-            let enemy_wins: Vec<Hand> = driver::calc(hand.clone(), board.clone(), deck.flatten());
-            let table = if matches.is_present("verbose") {
-                output::pretty_print_cards(enemy_wins)
-            } else {
-                output::pretty_print(enemy_wins)
-            };
-
+            // River calc
+            let enemy_wins = driver::river_calc(hand, board, deck);
+            let table = output::pretty_print(enemy_wins);
             table.printstd();
         }
     } else {
         // Grab hands from args
         let board = Hand::new_from_str(matches.value_of("board").unwrap())?;
         let hand = Hand::new_from_str(matches.value_of("hand").unwrap())?;
+        let board: Vec<Card> = board.iter().map(|c| *c).collect();
+        let hand: Vec<Card> = hand.iter().map(|c| *c).collect();
 
         // Check input lengths
         if board.len() < 3 || board.len() > 5 {
@@ -234,26 +218,18 @@ fn main() -> Result<(), String> {
         }
 
         // Make a deck
-        let mut deck: Deck = Deck::default();
-        for card in board.cards() {
-            deck.remove(*card);
-        }
-        for card in hand.cards() {
-            deck.remove(*card);
-        }
-
-        // Verify that all provided cards were unique
+        let deck: Deck = driver::deck_without(&hand, &board);
         if deck.len() != (52 - board.len() - hand.len()) {
             return Err("Some provided cards were non-unique".to_string());
         }
 
-        let enemy_wins: Vec<Hand> = driver::calc(hand, board, deck.flatten());
-        let table = if matches.is_present("verbose") {
-            output::pretty_print_cards(enemy_wins)
-        } else {
-            output::pretty_print(enemy_wins)
+        let enemy_wins = match board.len() {
+            3 => driver::flop_calc(hand, board, deck),
+            4 => driver::turn_calc(hand, board, deck),
+            5 => driver::river_calc(hand, board, deck),
+            _ => return Err("Board should be post-flop".to_string()),
         };
-
+        let table = output::pretty_print(enemy_wins);
         table.printstd();
     }
 
