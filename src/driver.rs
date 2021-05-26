@@ -9,10 +9,11 @@ fn enemy_hands(remaining: &FlatDeck) -> Vec<Vec<Card>> {
 }
 
 // take a user's hand and the board, generate the rank
-fn hand_board_rank(hand: Vec<Card>, board: Vec<Card>) -> Rank {
+fn hand_board_rank(hand: &Vec<Card>, board: &Vec<Card>) -> Rank {
     board
-        .into_iter()
-        .chain(hand.into_iter())
+        .iter()
+        .chain(hand.iter())
+        .map(|c| *c)
         .collect::<Vec<Card>>()
         .rank()
 }
@@ -51,17 +52,53 @@ fn hand_beats(usr_rank: Rank, board: Vec<Card>, enemy: Vec<Vec<Card>>) -> Vec<Be
         .into_par_iter()
         .map(|hand| Beats {
             hand: (hand[0], hand[1]),
-            we_beat: hand_board_rank(hand, board.clone()) < usr_rank,
+            we_beat: hand_board_rank(&hand, &board) < usr_rank,
         })
         .collect()
+}
+
+pub fn deck_without(hand: &Vec<Card>, board: &Vec<Card>) -> Deck {
+    let mut deck = Deck::default();
+    for card in board {
+        deck.remove(*card);
+    }
+
+    for card in hand {
+        deck.remove(*card);
+    }
+
+    deck
 }
 
 pub fn river_calc(
     user_hand: Vec<Card>,
     board: Vec<Card>,
-    remaining: FlatDeck,
+    remaining: Deck,
 ) -> HashMap<PokerHand, f64> {
-    let usr_rank: Rank = hand_board_rank(user_hand, board.clone());
-    let enemy: Vec<Vec<Card>> = enemy_hands(&remaining);
+    let usr_rank: Rank = hand_board_rank(&user_hand, &board);
+    let enemy: Vec<Vec<Card>> = enemy_hands(&remaining.flatten());
     prob_calc(hand_beats(usr_rank, board, enemy))
+}
+
+pub fn turn_calc(
+    user_hand: Vec<Card>,
+    board: Vec<Card>,
+    remaining: Deck,
+) -> HashMap<PokerHand, f64> {
+    let remaining_cards: Vec<Card> = remaining.into_iter().collect();
+    let beats: Vec<Beats> = remaining_cards
+        .into_par_iter()
+        .map(|card| {
+            let mut river_board = board.clone();
+            river_board.push(card);
+            let river_remaining = deck_without(&user_hand, &river_board);
+
+            let usr_rank: Rank = hand_board_rank(&user_hand, &river_board);
+            let enemy: Vec<Vec<Card>> = enemy_hands(&river_remaining.flatten());
+            hand_beats(usr_rank, river_board, enemy)
+        })
+        .flatten()
+        .collect();
+
+    prob_calc(beats)
 }
