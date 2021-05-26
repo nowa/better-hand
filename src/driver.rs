@@ -102,3 +102,37 @@ pub fn turn_calc(
 
     prob_calc(beats)
 }
+
+pub fn flop_calc(
+    user_hand: Vec<Card>,
+    board: Vec<Card>,
+    remaining: Deck,
+) -> HashMap<PokerHand, f64> {
+    let remaining_cards: Vec<Card> = remaining.into_iter().collect();
+    let beats: Vec<Beats> = remaining_cards
+        .into_par_iter()
+        .map(|card| {
+            let mut turn_board = board.clone();
+            turn_board.push(card);
+            let turn_remaining: Vec<Card> =
+                deck_without(&user_hand, &turn_board).into_iter().collect();
+
+            turn_remaining
+                .into_par_iter()
+                .map(|river_card| {
+                    let mut river_board = turn_board.clone();
+                    river_board.push(river_card);
+                    let river_remaining = deck_without(&user_hand, &river_board);
+
+                    let usr_rank: Rank = hand_board_rank(&user_hand, &river_board);
+                    let enemy: Vec<Vec<Card>> = enemy_hands(&river_remaining.flatten());
+                    hand_beats(usr_rank, river_board, enemy)
+                })
+                .flatten()
+                .collect::<Vec<Beats>>()
+        })
+        .flatten()
+        .collect();
+
+    prob_calc(beats)
+}
