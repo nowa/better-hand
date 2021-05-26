@@ -6,6 +6,7 @@ use rs_poker::core::*;
 
 mod driver;
 mod output;
+mod types;
 
 fn main() -> Result<(), String> {
     let matches = App::new("better-hand")
