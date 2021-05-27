@@ -2,20 +2,18 @@ use crate::types::PokerHand;
 use prettytable::{Attr, Cell, Row, Table};
 use std::collections::HashMap;
 
-fn cell_color(i: u8, j: u8, prob: Option<f64>) -> u32 {
+fn cell_color(prob: Option<f64>) -> u32 {
     if prob.is_none() {
-        return 11;
+        return 11; // Yellow
     }
 
-    if prob.unwrap() <= 0.75 {
-        1
+    let prob = prob.unwrap();
+    if prob >= 0.50 {
+        return 4; // Blue
+    } else if prob >= 0.33 {
+        return 7; // White
     } else {
-        if i <= j {
-            // off
-            4
-        } else {
-            7
-        }
+        return 1; // Red
     }
 }
 
@@ -46,8 +44,7 @@ pub fn pretty_print(probs: HashMap<PokerHand, f64>) -> Table {
         for j in 0..13 {
             let cell: (PokerHand, Option<f64>) = grid[i as usize][j as usize];
             row_vec.push(
-                Cell::new(&grid_string(cell))
-                    .with_style(Attr::ForegroundColor(cell_color(i, j, cell.1))),
+                Cell::new(&grid_string(cell)).with_style(Attr::ForegroundColor(cell_color(cell.1))),
             );
         }
         table.add_row(Row::new(row_vec));
