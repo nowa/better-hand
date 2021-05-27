@@ -1,14 +1,16 @@
 [package]
 name = "better-hand"
-version = "1.1.1"
+version = "1.1.2"
 authors = ["Adithya Chari <adithya.chari@gmail.com>"]
 edition = "2018"
 license = "MIT"
-description = "Finds better No Limit Hold 'Em hands than yours"
+description = "Calculates the equity of your No Limit Hold 'Em hand"
 homepage = "https://github.com/adchari/better-hand"
 documentation = "https://github.com/adchari/better-hand"
 repository = "https://github.com/adchari/better-hand"
 readme = "README.md"
+keywords = ["cli", "cards", "poker", "holdem", "game"]
+categories = ["command-line-utilities", "games"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

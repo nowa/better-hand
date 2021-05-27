@@ -49,7 +49,7 @@ fn main() -> Result<(), String> {
                 .with_prompt("Hand")
                 .allow_empty(true)
                 .validate_with(|input: &String| -> Result<(), &str> {
-                    if input.eq_ignore_ascii_case("exit") {
+                    if input.eq_ignore_ascii_case("exit") || input == "" {
                         return Ok(());
                     }
                     let hand = Hand::new_from_str(input);
@@ -81,7 +81,7 @@ fn main() -> Result<(), String> {
                 .with_prompt("Flop")
                 .allow_empty(true)
                 .validate_with(|input: &String| -> Result<(), &str> {
-                    if input.eq_ignore_ascii_case("exit") {
+                    if input.eq_ignore_ascii_case("exit") || input == "" {
                         return Ok(());
                     }
                     let flop = Hand::new_from_str(input);
@@ -123,7 +123,7 @@ fn main() -> Result<(), String> {
                 .with_prompt("Turn")
                 .allow_empty(true)
                 .validate_with(|input: &String| -> Result<(), &str> {
-                    if input.eq_ignore_ascii_case("exit") {
+                    if input.eq_ignore_ascii_case("exit") || input == "" {
                         return Ok(());
                     }
                     let turn = Hand::new_from_str(input);
@@ -165,7 +165,7 @@ fn main() -> Result<(), String> {
                 .with_prompt("River")
                 .allow_empty(true)
                 .validate_with(|input: &String| -> Result<(), &str> {
-                    if input.eq_ignore_ascii_case("exit") {
+                    if input.eq_ignore_ascii_case("exit") || input == "" {
                         return Ok(());
                     }
                     let river = Hand::new_from_str(input);
