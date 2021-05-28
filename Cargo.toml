@@ -1,6 +1,6 @@
 [package]
 name = "better-hand"
-version = "1.1.2"
+version = "1.1.3"
 authors = ["Adithya Chari <adithya.chari@gmail.com>"]
 edition = "2018"
 license = "MIT"

@@ -32,7 +32,7 @@ OPTIONS:
 
 This application allows you to input your hole cards and a set of cards on the board (at the flop, turn or river), and calculate the equity your hand has against possible opponent hands. Equity is defined as the probability that you will win that hand, taking into account any future cards that may appear, and the many different versions of each opponent starting hand (e.g. there are 4 ways to make a suited hand, whereas the same hand off-suit can be made in 12 different ways).
 
-NLH starting hands are often described with a "range", a square chart of the ranks of your cards, as well as if they're suited or not. The output of this program is a chart in that form, where each cell includes your equity against it. Output is additionally color-coded if your terminal supports it. Blue squares are suited, white is off-suit, red implies that your odds are worse than 3 to 1, and yellow squares indicate impossible hands for the opponent to have given board texture.
+NLH starting hands are often described with a "range", a square chart of the ranks of your cards, as well as if they're suited or not. The output of this program is a chart in that form, where each cell includes your equity against it. Output is additionally color-coded if your terminal supports it. Blue squares indicate that your equity is over 50%, white is 33%-50%, red implies that your odds are worse than 33%, and yellow squares indicate impossible hands for the opponent to have given board texture.
 
 For example: 
 
