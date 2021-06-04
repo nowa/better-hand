@@ -11,7 +11,7 @@ mod types;
 fn main() -> Result<(), String> {
     let matches = App::new("better-hand")
 		.author("Adithya Chari, <adithya.chari@gmail.com>")
-		.version("1.0.0")
+		.version("1.1.4")
 		.about("Calculates your equity against opponent starting hands for No-Limit Texas Hold 'Em")
 		.arg(
 			Arg::with_name("board")
