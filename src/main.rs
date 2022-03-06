@@ -1,4 +1,3 @@
-#![feature(min_const_generics)]
 extern crate clap;
 
 use clap::{App, Arg};
